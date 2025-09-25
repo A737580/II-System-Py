@@ -1,0 +1,58 @@
+my_app/
+│── main.py               # Точка входа
+│
+├── core/                 # Основные утилиты и настройки
+│   ├── config.py         # Конфигурация (пути, параметры нейросети и т.п.)
+│   ├── logger.py         # Настройка логирования
+│   └── utils.py          # Вспомогательные функции
+│
+├── ui/                   # Интерфейс (страницы, компоненты)
+│   ├── __init__.py
+│   ├── pages/            # Страницы интерфейса
+│   │   ├── home_page.py
+│   │   ├── settings_page.py
+│   │   └── neural_page.py
+│   ├── components/       # Повторно используемые UI-компоненты
+│   │   ├── navbar.py
+│   │   └── footer.py
+│   └── router.py         # Роутинг страниц
+│
+├── services/             # Логика работы (без UI)
+│   ├── neural_service.py # Работа с нейросетью
+│   ├── file_service.py   # Работа с файлами (например, загрузка датасета)
+│   └── user_service.py   # Бизнес-логика пользователей
+│
+├── models/               # Модели данных
+│   ├── neural_model.py   # Класс-обёртка над моделью НС
+│   └── user.py           # Простейшая модель пользователя
+│
+└── tests/                # Тесты (юнит/интеграционные)
+    ├── test_ui.py
+    ├── test_services.py
+    └── test_models.py
+
+
+Минимальный вид проекта.
+
+
+my_app/
+│── main.py               # Точка входа
+│
+├── core/
+│   └── config.py         # Конфигурация
+│
+├── ui/                   # Интерфейс
+│   ├── router.py         # Роутинг (подключение страниц)
+│   ├── components/       # Общие элементы UI
+│   │   ├── navbar.py
+│   │   └── footer.py
+│   └── pages/            # Страницы
+│       ├── home_page.py
+│       └── neural_page.py
+│
+├── services/             # Логика работы
+│   └── neural_service.py
+│
+└── models/               # Модели данных
+    └── neural_model.py
+

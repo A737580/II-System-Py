@@ -1,5 +1,5 @@
-from models.facts import Facts
-from models.rules import Rules
+from models.exercise1.facts import Facts
+from models.exercise1.rules import Rules
 from typing import Set, List
 
 
@@ -44,7 +44,7 @@ class LogicalConclusionService:
         
         while new_fact_derived:
             new_fact_derived = False
-            steps.append(f"\n🔄 Итерация {iteration}:")
+            steps.append(f"\nИтерация {iteration}:")
             iteration += 1
             
             # Собираем все цели для проверки на этой итерации
@@ -76,7 +76,7 @@ class LogicalConclusionService:
                 if current_goal in proven_facts:
                     continue
                     
-                steps.append(f"  📌 Проверяем: {current_goal}")
+                steps.append(f"  Проверяем: {current_goal}")
                 
                 if current_goal in rules_dict:
                     for i, antecedents in enumerate(rules_dict[current_goal], 1):
@@ -110,12 +110,12 @@ class LogicalConclusionService:
         # Финальный результат
         steps.append("\n" + "="*50)
         if target in proven_facts:
-            steps.append(f"🎯 ЦЕЛЬ ДОСТИГНУТА! Факт '{target}' ВЫВОДИМ")
+            steps.append(f"ЦЕЛЬ ДОСТИГНУТА! Факт '{target}' ВЫВОДИМ")
         else:
-            steps.append(f"💥 ЦЕЛЬ НЕ ДОСТИГНУТА! Факт '{target}' НЕ ВЫВОДИМ")
+            steps.append(f"ЦЕЛЬ НЕ ДОСТИГНУТА! Факт '{target}' НЕ ВЫВОДИМ")
         
-        steps.append(f"📈 Всего доказано фактов: {len(proven_facts)}")
-        steps.append(f"📋 Доказанные факты: {', '.join(sorted(proven_facts))}")
+        steps.append(f"Всего доказано фактов: {len(proven_facts)}")
+        steps.append(f"Доказанные факты: {', '.join(sorted(proven_facts))}")
         
         return steps
 

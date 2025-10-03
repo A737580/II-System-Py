@@ -100,6 +100,7 @@ class ListBox:
                 'border: 1px solid #ccc; text-align: left; '
                 f'background-color: {"#0078d4" if is_selected else "#f0f0f0"}; '
                 f'color: {"white" if is_selected else "black"};'
+                'text-transform: none;'
             )
             
             with self.container:

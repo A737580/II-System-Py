@@ -7,3 +7,4 @@ class Navbar:
             with ui.row():
                 ui.link("Главная", "/")
                 ui.link("Задание 1", "/page1")
+                ui.link("Задание 2", "/page2")

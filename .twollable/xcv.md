@@ -68,3 +68,28 @@ A ∩ B = {min(0.3,0.6)/x, min(0.8,0.4)/y} = {0.3/x, 0.4/y}
 - Управление процессами
 
 Дискретное нечеткое множество позволяет работать с неточными, расплывчатыми понятиями, которые часто встречаются в реальном мире.
+
+
+
+```python
+def t_norm(self, a: float, b: float) -> float:
+    match self._mode:
+        case 1: return min(a, b)
+        case 2: return a * b
+        case 3: return max(a + b - 1, 0)
+        case 4:
+            if b == 1: return a
+            if a == 1: return b
+            return 0
+
+# === S-норма (объединение) ===
+def s_norm(self, a: float, b: float) -> float:
+    match self._mode:
+        case 1: return max(a, b)
+        case 2: return a + b - a * b
+        case 3: return min(a + b, 1)
+        case 4:
+            if b == 0: return a
+            if a == 0: return b
+            return 1
+```

@@ -35,7 +35,7 @@ class Page1:
                                 )
 
                     # ---- Правая колонка: Логический вывод ----
-                    with ui.column().classes("gap-4 w-1/3"):
+                    with ui.column().classes("gap-4 w-1/3 "):
                         ui.label("Логический вывод").classes("text-xl font-bold")
 
                         self.radio_logic = ui.radio(

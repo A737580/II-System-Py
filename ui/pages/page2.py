@@ -120,17 +120,17 @@ class Page2:
             ):
 
                 # --- Верхняя панель: создание и добавление элементов ---
-                with ui.row().classes("w-full"):
+                with ui.row().classes("w-full gap-0"):
                     # левая часть — список множеств
                     with ui.column().classes("w-1/3"):
-                        ui.label("Список нечетких множеств").classes("text-h6")
+                        ui.label("Список нечетких множеств").classes("text-h6 ml-auto mr-auto")
                         self.fuzzy_box = ListBox(height="230px")
 
                     # правая часть — добавление множества и элементов
-                    with ui.column().classes("w-2/3"):
-                        ui.label("Создать или дополнить множество").classes("text-h6")
+                    with ui.column().classes("w-2/3 "):
+                        ui.label("Создать или дополнить множество").classes("text-h6 ml-auto mr-auto")
 
-                        with ui.row().classes("gap-4"):
+                        with ui.row().classes("ml-4"):
                             self.fuzzy_name = ui.input("Имя множества").style("width:200px")
                             self.param_input = ui.number("Параметр", step=0.1)
                             self.truth_input = ui.number(
@@ -138,38 +138,40 @@ class Page2:
                                 min=0, max=1, step=0.1, value=1.0
                             ).style("width:200px")
 
-                        with ui.row().classes("gap-2 mt-2"):
+                        with ui.row().classes("gap-2 mt-2 ml-4"):
                             ui.button("Создать/Добавить", on_click=self.add_fuzzy)
                             ui.button("Удалить параметр", on_click=self.remove_param)
-                            ui.button("Очистить все", on_click=self.clear_all_sets, color="red")
+                            
 
                 # --- Средняя панель: операции ---
-                with ui.row().classes("w-full mt-4"):
+                with ui.row().classes("w-full mt-4 gap-0"):
                     with ui.column().classes("w-1/3"):
-                        ui.label("Результаты операций").classes("text-h6")
+                        ui.label("Результаты операций").classes("text-h6 ml-auto mr-auto")
                         self.result_box = ListBox(height="270px")
 
                     with ui.column().classes("w-2/3"):
-                        ui.label("Операции над нечеткими множествами").classes("text-h6")
-                        with ui.row():
-                            self.operation = ui.radio(
-                                ["Отрицание", "Конъюнкция", "Дизъюнкция"],
-                                value="Отрицание"
-                            )
+                        ui.label("Операции над нечеткими множествами").classes("text-h6 ml-auto mr-auto")
+                        
+                        with ui.row().classes("w-full gap-0"):
+                            with ui.row().classes("w-1/3"):
+                                self.operation = ui.radio(
+                                    ["Отрицание", "Конъюнкция", "Дизъюнкция"],
+                                    value="Отрицание"
+                                )
 
-                        with ui.row().classes("gap-4 mt-2"):
-                            self.left_set = ui.select([], label="Множество A")
-                            self.right_set = ui.select([], label="Множество B")
+                            with ui.row().classes("gap-4 mt-2 w-1/4"):
+                                self.left_set = ui.select([], label="Множество A")
+                                self.right_set = ui.select([], label="Множество B")
 
-                        with ui.row().classes("gap-4 mt-4"):
-                            self.norm_type = ui.radio(
-                                ["Минмакс", "Алгебраическая сумма", "Граничная сумма", "Драстическая сумма"],
-                                value="Минмакс"
-                            )
+                            with ui.row().classes("gap-4 mt-4 w-1/3"):
+                                self.norm_type = ui.radio(
+                                    ["Минмакс", "Алгебраическая сумма", "Граничная сумма", "Драстическая сумма"],
+                                    value="Минмакс"
+                                )
 
-                        with ui.row().classes("gap-4 mt-4"):
+                        with ui.row().classes("gap-4 mt-4 ml-4"):
                             ui.button("Выполнить операцию", on_click=self.perform_fuzzy_operation)
-                            ui.button("Очистить результат", on_click=lambda: self.result_box.clear())
+                            ui.button("Очистить все", on_click=self.clear_all_sets, color="red")
 
     def clear_all(self):
         self.statements:list[FuzzyStatement] = []
@@ -274,7 +276,7 @@ class Page2:
             else:
                 result = "Ошибка операции"
 
- # === НОВЫЙ ТАБ ===
+ # === ТАБ 2.2 ===
 
     def add_fuzzy(self):
         name = self.fuzzy_name.value
@@ -320,7 +322,7 @@ class Page2:
         self.left_set.set_options([])
         self.right_set.set_options([])
         ui.notify("Все множества очищены", color="red")
-
+    
     def update_fuzzy_list(self):
         """Обновить список множеств и селекты"""
         self.fuzzy_box.clear()

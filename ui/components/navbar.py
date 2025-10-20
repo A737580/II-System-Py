@@ -8,3 +8,5 @@ class Navbar:
                 ui.link("Главная", "/")
                 ui.link("Задание 1", "/page1")
                 ui.link("Задание 2", "/page2")
+                ui.link("Задание 3", "/page3")
+                ui.link("Задание 4", "/page4")

@@ -68,7 +68,53 @@ class Page4:
                 'Bright': self.triangle(value, 128, 255, 255)
             }
 
-    def infer(self, price, memory, weight, color):
+    def _conjunction(self,a: float, b: float, c: float, d: float, type: str) -> float:
+        match type.lower():
+            case "алгебраическое произведение":
+                return a * b * c * d
+            case "граничное произведение":
+                return max(0, a + b + c + d - 3)
+            case "драстическое произведение":
+                if a == 1.0 and b == 1.0 and c == 1.0 and d == 1.0:
+                    return 1.0
+                elif any(x == 0.0 for x in [a, b, c, d]):
+                    return 0.0
+                else:
+                    return min(a, b, c, d)
+            case _:  # "Минимум" по умолчанию
+                return min(a, b, c, d)
+
+    def _find_x_from_membership(self, truth_degree_list: dict, triangles: dict) -> dict:
+        """Найти x по y для всех треугольных функций."""
+        result = {}
+        
+        for category, (a, b, c) in triangles.items():
+            x_values = []
+            y = truth_degree_list[category]
+            # Левая сторона треугольника
+            if a != b:
+                x_left = a + y * (b - a)
+                if a <= x_left <= b:
+                    x_values.append(x_left)
+            
+            # Правая сторона треугольника  
+            if b != c:
+                x_right = c - y * (c - b)
+                if b <= x_right <= c:
+                    x_values.append(x_right)
+            
+            # Особый случай - вершина треугольника
+            if y == 1.0 and len(x_values) > 1:
+                x_values = [b]  # только вершина
+            
+            result[category] = x_values
+    
+        return result   
+    def check_truth_degrees(self,corners:dict,degrees:dict):
+        #написать вычисление дефазификацию для каждого из треугольников и по правилу
+
+
+    def infer(self, price, memory, weight, color, norm:str):
         """База правил + вывод"""
         fp = self.fuzzify('price', price)
         fm = self.fuzzify('memory', memory)
@@ -102,11 +148,14 @@ class Page4:
                 μ_mem = fm.get(m, 1.0)
                 μ_w = fw.get(w, 1.0)
                 μ_c = fc.get(c, 1.0) if c else 1.0
-                vals.append((μ_price * μ_mem * μ_w * μ_c) ** (1/4))
+                
+                vals.append(self._conjunction(μ_price,μ_mem,μ_w,μ_c, norm)) # считается иначе получаются нули при проходе по правилу и все правило становится нулевым
             result[label] = max(vals)
 
-        # дефаззификация (взвешенное среднее)
-        numeric = {'Bad': 2, 'Average': 5, 'Good': 8}
+        # дефаззификация (взвешенное среднее) 
+        triangles = {'Bad': (0,0,25), 'Average': (20,50,80), 'Good': (75,100,100)}
+        c_answers = self._find_x_from_membership(result, triangles)
+
         numerator = sum(result[k] * numeric[k] for k in result)
         denominator = sum(result.values())
         crisp = numerator / denominator if denominator > 0 else 0
@@ -174,7 +223,7 @@ class Page4:
             self.price_input = ui.number('Цена (₽)', value=500, min=0, max=1000, step=50, on_change=self.update_all)
             self.memory_input = ui.number('Память (ГБ)', value=128, min=0, max=256, step=8, on_change=self.update_all)
             self.weight_input = ui.number('Вес (г)', value=500, min=100, max=1000, step=50, on_change=self.update_all)
-            self.color_input = ui.number('Яркость цвета', value=128, min=0, max=255, step=10, on_change=self.update_all)
+            self.color_input = ui.numtriangleber('Яркость цвета', value=128, min=0, max=255, step=10, on_change=self.update_all)
 
         self.result_label = ui.label().classes('text-lg mt-4 text-center')
         self.bar = ui.linear_progress(value=0.5).props('color=green').classes('w-1/2 mx-auto mt-2')

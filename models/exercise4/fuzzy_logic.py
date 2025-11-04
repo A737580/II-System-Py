@@ -39,17 +39,49 @@ class FuzzyLogic:
         return class_membership
     
     def _fuzzify(self, inputs: Inputs, opts: List[OptTriFunc]) -> List[FuzzifyInput]:
-        fuzzified = []
-        input_dict = inputs.__dict__
+        """Фаззификация входных данных"""
+        result = []
+        
+        # Создаем словарь для быстрого доступа к входным значениям
+        input_values = {
+            "Price": inputs.price,
+            "Memory": inputs.memory,
+            "Weight": inputs.weight,
+            "ColorR": inputs.colorR,
+            "ColorG": inputs.colorG,
+            "ColorB": inputs.colorB
+        }
+        
+        # Для каждого параметра
         for opt in opts:
-            name = opt.name[0].lower() + opt.name[1:]
-            x_val = input_dict.get(name)
-            fuzzy_vals = []
-            for tri in opt.variant:
-                degree = self._triangle(x_val, tri.left_point, tri.center_point, tri.right_point)
-                fuzzy_vals.append(FuzzyEstimates(tri.name, degree))
-            fuzzified.append(FuzzifyInput(name, fuzzy_vals))
-        return fuzzified
+            fuzzy_estimates = []
+            
+            # Получаем входное значение для текущего параметра
+            input_value = input_values.get(opt.name)
+            
+            # print(opt.name)
+            
+            if input_value is not None:
+                # Для каждой лингвистической переменной (Low, Medium, High)
+                for tri_func in opt.variant:
+                    # Вычисляем степень принадлежности
+                    membership = self._triangle(
+                        input_value,
+                        tri_func.left_point,
+                        tri_func.center_point,
+                        tri_func.right_point
+                    )
+                    
+                    fuzzy_estimates.append(
+                        FuzzyEstimates(name=tri_func.name, truth_degree=membership)
+                    )
+
+                    # print(tri_func.name +" : "+ str(membership))
+                # print("===========================")
+            
+            result.append(FuzzifyInput(name=opt.name, fuzzy_estimates=fuzzy_estimates))
+        
+        return result
 
     def _triangle(self, x, a, b, c) -> float:
         """
@@ -82,64 +114,115 @@ class FuzzyLogic:
             elif b <= x <= c:
                 return (c - x) / (c - b)
 
-    def _calculating_truth_degree_by_class(self, f_inputs: List[FuzzifyInput], rules: List[Rule], norm:str) -> List[TruthDegreeByClass]:
+    def _calculating_truth_degree_by_class(self, f_inputs: List[FuzzifyInput], rules: List[Rule], norm: str) -> List[TruthDegreeByClass]:
+        """Вычисление степени истинности для каждого класса"""
         result = []
+        
         for rule in rules:
-            class_name = rule.name
-            rule_truth_values = []
-            for variant in rule.variant:  # Каждое правило — это комбинация условий
-                vals = []
+            max_truth_degree = 0.0
+            
+            # Для каждого варианта правила
+            for variant in rule.variant:
+                # Получаем степени принадлежности для всех 6 параметров
+                memberships = []
+                
                 for f_input in f_inputs:
-                    feature_name = f_input.name
-                    fuzzy_est_name = variant.get(feature_name)
-                    if fuzzy_est_name is None:
-                        continue
-                    val = next((fe.truth_degree for fe in f_input.fuzzy_estimates if fe.name == fuzzy_est_name), 0.0)
-                    vals.append(val)
-                # объединяем по норме
-                while len(vals) < 4:  # защита от ошибок (если меньше 4)
-                    vals.append(1.0)
-                truth_degree = self._conjunction(*vals[:4], type=norm)
-                rule_truth_values.append(truth_degree)
-            # объединяем по максимуму
-            final_truth = max(rule_truth_values) if rule_truth_values else 0.0
-            result.append(TruthDegreeByClass(class_name, final_truth))
+                    # Получаем требуемое значение для текущего параметра
+                    required_value = variant.get(f_input.name)
+                    
+                    if required_value:
+                        # Находим степень принадлежности для требуемого значения
+                        for estimate in f_input.fuzzy_estimates:
+                            if estimate.name == required_value:
+                                memberships.append(estimate.truth_degree)
+                                break
+                
+                # Применяем конъюнкцию для всех 6 параметров
+                if len(memberships) == 6:
+                    truth_degree = self._conjunction(memberships, norm)
+                    
+                    # Берем максимум по всем вариантам (дизъюнкция)
+                    max_truth_degree = max(max_truth_degree, truth_degree)
+            
+            result.append(TruthDegreeByClass(name=rule.name, truth_degree=max_truth_degree))
+        
         return result
 
-
-    def _conjunction(self,a: float, b: float, c: float, d: float, type: str) -> float:
+    def _conjunction(self, values: List[float], type: str) -> float:
+        """Конъюнкция для произвольного количества значений"""
+        if not values:
+            return 0.0
+        
         match type.lower():
             case "алгебраическое произведение":
-                return a * b * c * d
+                result = 1.0
+                for v in values:
+                    result *= v
+                return result
+            
             case "граничное произведение":
-                return max(0, a + b + c + d - 3)
+                return max(0, sum(values) - (len(values) - 1)) #max(0, a + b + c + d + e + f - 5)
+            
             case "драстическое произведение":
-                if a == 1.0 and b == 1.0 and c == 1.0 and d == 1.0:
+                if all(v == 1.0 for v in values):
                     return 1.0
-                elif any(x == 0.0 for x in [a, b, c, d]):
+                elif any(v == 0.0 for v in values): #any(x == 0.0 for x in [a, b, c, d, e, f]):
                     return 0.0
                 else:
-                    return min(a, b, c, d)
+                    return min(values) #min(a, b, c, d, e, f)
+            
             case _:  # "Минимум" по умолчанию
-                return min(a, b, c, d)
+                return min(values)
+            
 
-    def _de_fuzzify(self, truth_degrees_by_cls:List[TruthDegreeByClass], rules: List[Rule]) -> ClassMembership:
+    def _de_fuzzify(self, truth_degrees_by_cls: List[TruthDegreeByClass], rules: List[Rule]) -> ClassMembership:
+        """
+        Дефаззификация методом центроида.
+        Возвращает класс и координату X на оси абсцисс (не степень принадлежности!)
+        """
         numerator = 0.0
         denominator = 0.0
-        for td in truth_degrees_by_cls:
-            rule = next((r for r in rules if r.name == td.name), None)
-            if rule is None:
-                continue
-            μ = td.truth_degree
+        
+        for i, truth_degree_cls in enumerate(truth_degrees_by_cls):
+            # Получаем соответствующее правило
+            rule = rules[i]
+            
+            # Центр треугольной функции результирующего класса (по оси X)
             center = rule.opt_rule.center_point
-            numerator += μ * center
-            denominator += μ
+            
+            # Степень истинности (высота усеченной функции принадлежности)
+            mu = truth_degree_cls.truth_degree
+            
+            # Вычисляем числитель и знаменатель для центроида
+            numerator += center * mu
+            denominator += mu
+        
+        # Вычисляем центроид (координату X)
         if denominator == 0:
-            return ClassMembership("Undefined", 0.0)
-        center_value = numerator / denominator
-        # выбираем ближайший по центру класс
-        best_rule = min(
-            rules, key=lambda r: abs(center_value - r.opt_rule.center_point)
-        )
-        best_truth = next(td.truth_degree for td in truth_degrees_by_cls if td.name == best_rule.name)
-        return ClassMembership(best_rule.name, best_truth)
+            # Если все степени истинности равны 0, возвращаем первый класс с координатой 0
+            return ClassMembership(name=rules[0].name, membership_degree=0.0)
+        
+        centroid_x = numerator / denominator
+        
+        # Определяем класс: находим правило, в диапазон которого попадает centroid_x
+        selected_class = None
+        
+        for rule in rules:
+            left = rule.opt_rule.left_point
+            right = rule.opt_rule.right_point
+            
+            # Проверяем, попадает ли centroid_x в диапазон класса
+            if left <= centroid_x <= right:
+                selected_class = rule.name
+                break
+        
+        # Если не попали ни в один диапазон, выбираем класс с ближайшим центром
+        if selected_class is None:
+            min_distance = float('inf')
+            for rule in rules:
+                distance = abs(rule.opt_rule.center_point - centroid_x)
+                if distance < min_distance:
+                    min_distance = distance
+                    selected_class = rule.name
+        
+        return ClassMembership(name=selected_class, membership_degree=centroid_x)

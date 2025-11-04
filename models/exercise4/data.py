@@ -22,8 +22,6 @@ class Rule:
     variant: List[Dict[str,str]]
     opt_rule: TriFunc # ширина по Х в результирующих классах(bad,average,good)
 
-
-
 class Data:
     """ 
     opt_tri_func: List[OptTriFunc]
@@ -53,29 +51,42 @@ class Data:
             Rule(
                 "Bad",
                 [
-                    {"Price":"Low","Memory":"Low","Weight":"Low","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
-                    {"Price":"Low","Memory":"Low","Weight":"Medium","ColorR":"High","ColorG":"Low","ColorB":"Low"},
-                    {"Price":"High","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"High","ColorB":"Low"}
+                    # Низкая цена, но плохие характеристики
+                    {"Price":"Low","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
+                    # Высокая цена, но плохие характеристики (плохое соотношение)
+                    {"Price":"High","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
+                    # Средняя цена, но очень плохие характеристики
+                    {"Price":"Medium","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
                 ],
-                TriFunc("Bad",0,0,30) 
+                TriFunc("Bad", 0, 0, 30)
             ),
             Rule(
                 "Average",
                 [
-                    {"Price":"Medium","Memory":"Medium","Weight":"Medium","ColorR":"Low","ColorG":"Low","ColorB":"High"},
-                    {"Price":"High","Memory":"Low","Weight":"Low","ColorR":"High","ColorG":"Medium","ColorB":"Low"},
-                    {"Price":"Low","Memory":"High","Weight":"High","ColorR":"Medium","ColorG":"High","ColorB":"Low"}
+                    # Средняя цена и средние характеристики
+                    {"Price":"Medium","Memory":"Medium","Weight":"Medium","ColorR":"Medium","ColorG":"Medium","ColorB":"Medium"},
+                    # Низкая цена, средние характеристики (хорошее соотношение)
+                    {"Price":"Low","Memory":"Medium","Weight":"Medium","ColorR":"Medium","ColorG":"Medium","ColorB":"High"},
+                    # Высокая цена, хорошая память, но тяжелый
+                    {"Price":"High","Memory":"High","Weight":"High","ColorR":"High","ColorG":"Medium","ColorB":"Low"},
+                    # Средняя цена, хорошая память, легкий
+                    {"Price":"Medium","Memory":"High","Weight":"Low","ColorR":"Medium","ColorG":"High","ColorB":"Medium"},
                 ],
-                TriFunc("Average",20,50,80) 
+                TriFunc("Average", 25, 50, 75)
             ),
             Rule(
                 "Good",
                 [
+                    # Высокая цена, отличные характеристики
+                    {"Price":"High","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"High"},
+                    # Средняя цена, хорошие характеристики (отличное соотношение)
+                    {"Price":"Medium","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"High"},
+                    # Высокая цена, хорошая память и легкий вес
+                    {"Price":"High","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"Medium"},
+                    # Средняя цена, отличная память, средний вес
                     {"Price":"Medium","Memory":"High","Weight":"Medium","ColorR":"High","ColorG":"High","ColorB":"High"},
-                    {"Price":"High","Memory":"High","Weight":"Medium","ColorR":"High","ColorG":"Medium","ColorB":"Medium"},
-                    {"Price":"High","Memory":"Medium","Weight":"Low","ColorR":"Medium","ColorG":"Medium","ColorB":"Low"}
                 ],
-                TriFunc("Good",70,100,100) 
+                TriFunc("Good", 70, 100, 100)
             )
         ]
 

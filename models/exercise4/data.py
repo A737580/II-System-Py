@@ -51,42 +51,33 @@ class Data:
             Rule(
                 "Bad",
                 [
-                    # Низкая цена, но плохие характеристики
-                    {"Price":"Low","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
-                    # Высокая цена, но плохие характеристики (плохое соотношение)
+                    # Плохие комбинации
                     {"Price":"High","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
-                    # Средняя цена, но очень плохие характеристики
-                    {"Price":"Medium","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
+                    {"Price":"Low","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Low"},
+                    {"Price":"Medium","Memory":"Low","Weight":"High","ColorR":"Low","ColorG":"Low","ColorB":"Medium"},
                 ],
-                TriFunc("Bad", 0, 0, 30)
+                TriFunc("Bad", 0, 15, 30)
             ),
             Rule(
                 "Average",
                 [
-                    # Средняя цена и средние характеристики
+                    # Средние комбинации
                     {"Price":"Medium","Memory":"Medium","Weight":"Medium","ColorR":"Medium","ColorG":"Medium","ColorB":"Medium"},
-                    # Низкая цена, средние характеристики (хорошее соотношение)
-                    {"Price":"Low","Memory":"Medium","Weight":"Medium","ColorR":"Medium","ColorG":"Medium","ColorB":"High"},
-                    # Высокая цена, хорошая память, но тяжелый
-                    {"Price":"High","Memory":"High","Weight":"High","ColorR":"High","ColorG":"Medium","ColorB":"Low"},
-                    # Средняя цена, хорошая память, легкий
-                    {"Price":"Medium","Memory":"High","Weight":"Low","ColorR":"Medium","ColorG":"High","ColorB":"Medium"},
+                    {"Price":"Low","Memory":"Medium","Weight":"Low","ColorR":"Medium","ColorG":"Medium","ColorB":"High"},
+                    {"Price":"Medium","Memory":"High","Weight":"Medium","ColorR":"High","ColorG":"Medium","ColorB":"Medium"},
+                    {"Price":"High","Memory":"Medium","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"Low"},
                 ],
                 TriFunc("Average", 25, 50, 75)
             ),
             Rule(
                 "Good",
                 [
-                    # Высокая цена, отличные характеристики
-                    {"Price":"High","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"High"},
-                    # Средняя цена, хорошие характеристики (отличное соотношение)
+                    # Хорошие комбинации
                     {"Price":"Medium","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"High"},
-                    # Высокая цена, хорошая память и легкий вес
-                    {"Price":"High","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"Medium"},
-                    # Средняя цена, отличная память, средний вес
-                    {"Price":"Medium","Memory":"High","Weight":"Medium","ColorR":"High","ColorG":"High","ColorB":"High"},
+                    {"Price":"High","Memory":"High","Weight":"Low","ColorR":"High","ColorG":"High","ColorB":"High"},
+                    {"Price":"High","Memory":"High","Weight":"Medium","ColorR":"High","ColorG":"High","ColorB":"Medium"},
                 ],
-                TriFunc("Good", 70, 100, 100)
+                TriFunc("Good", 70, 85, 100)
             )
         ]
 
@@ -103,8 +94,8 @@ class Data:
                 "Memory",
                 [
                     TriFunc("Low", 0, 0, 64),
-                    TriFunc("Medium", 32, 128, 192),
-                    TriFunc("High", 128, 256, 256),
+                    TriFunc("Medium", 48, 128, 192),
+                    TriFunc("High", 160, 256, 256),
                 ]
             ),
             OptTriFunc(
@@ -112,7 +103,7 @@ class Data:
                 [
                     TriFunc("Low", 100, 100, 400),
                     TriFunc("Medium", 300, 600, 900),
-                    TriFunc("High", 700, 1000, 1000),
+                    TriFunc("High", 800, 1000, 1000),
                 ]
             ),
             OptTriFunc(
@@ -120,7 +111,7 @@ class Data:
                 [
                     TriFunc("Low", 0, 0, 128),
                     TriFunc("Medium", 64, 128, 192),
-                    TriFunc("High", 128, 255, 255),
+                    TriFunc("High", 160, 255, 255),
                 ]
             ),
             OptTriFunc(
@@ -128,7 +119,7 @@ class Data:
                 [
                     TriFunc("Low", 0, 0, 128),
                     TriFunc("Medium", 64, 128, 192),
-                    TriFunc("High", 128, 255, 255),
+                    TriFunc("High", 160, 255, 255),
                 ]
             ),
             OptTriFunc(
@@ -136,7 +127,7 @@ class Data:
                 [
                     TriFunc("Low", 0, 0, 128),
                     TriFunc("Medium", 64, 128, 192),
-                    TriFunc("High", 128, 255, 255),
+                    TriFunc("High", 160, 255, 255),
                 ]
             )
         ]

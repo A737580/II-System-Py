@@ -1,3 +1,3 @@
 class Config:
     APP_NAME = "II System Py"
-    VERSION = "4"
+    VERSION = "5"

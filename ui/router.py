@@ -4,6 +4,7 @@ from ui.pages.page1 import Page1
 from ui.pages.page2 import Page2
 from ui.pages.page3 import Page3
 from ui.pages.page4 import Page4
+from ui.pages.page5 import Page5
 from ui.components.navbar import Navbar
 from ui.components.footer import Footer
 
@@ -37,3 +38,10 @@ def setup_routes():
         Navbar()
         Page4()
         Footer()
+
+    @ui.page('/page5')
+    def page5():
+        Navbar()
+        Page5()
+        Footer()
+

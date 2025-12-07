@@ -10,3 +10,4 @@ class Navbar:
                 ui.link("Задание 2", "/page2")
                 ui.link("Задание 3", "/page3")
                 ui.link("Задание 4", "/page4")
+                ui.link("Задание 5", "/page5")
